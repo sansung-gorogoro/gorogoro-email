@@ -3,6 +3,7 @@ package com.gorogoro.notification.rabbitmq.consumer
 import com.gorogoro.notification.application.port.`in`.SendNotificationUseCase
 import com.gorogoro.notification.domain.model.NotificationCommand
 import com.gorogoro.notification.rabbitmq.config.RabbitMqConfig
+import com.gorogoro.notification.rabbitmq.dto.Event
 import com.gorogoro.notification.rabbitmq.dto.NotificationEventDto
 import com.rabbitmq.client.Channel
 import org.springframework.amqp.core.Message
@@ -20,33 +21,39 @@ class MessageConsumer(
 
     @RabbitListener(queues = [RabbitMqConfig.QUEUE_NAME], ackMode = "MANUAL")
     @Throws(IOException::class)
-    fun handle(event: NotificationEventDto, message: Message, channel: Channel) {
+    fun handle(event: Event, message: Message, channel: Channel) {
         val tag = message.messageProperties.deliveryTag
 
         try {
-            val command = NotificationCommand(
-                email = event.email,
-                type = event.type,
-                payload = event.payload
-            )
-
-            val result = sendNotificationUseCase.sendNotification(command)
-
-            if (result != null && message.messageProperties.replyTo != null) {
-                val replyTo = message.messageProperties.replyTo
-                val correlationId = message.messageProperties.correlationId
-
-                val responseMessage = MessageBuilder
-                    .withBody(result.toByteArray())
-                    .setCorrelationId(correlationId)
-                    .build()
-
-                rabbitTemplate.send("", replyTo, responseMessage)
+            when (event) {
+                is NotificationEventDto -> {
+                    val command = NotificationCommand(
+                        email = event.email,
+                        type = event.type,
+                        payload = event.payload
+                    )
+                    handleNotificationCommand(command, message)
+                }
             }
-
             channel.basicAck(tag, false)
         } catch (ex: Exception) {
             channel.basicNack(tag, false, false)
+        }
+    }
+
+    private fun handleNotificationCommand(command: NotificationCommand, message: Message) {
+        val result = sendNotificationUseCase.sendNotification(command)
+
+        if (result != null && message.messageProperties.replyTo != null) {
+            val replyTo = message.messageProperties.replyTo
+            val correlationId = message.messageProperties.correlationId
+
+            val responseMessage = MessageBuilder
+                .withBody(result.toByteArray())
+                .setCorrelationId(correlationId)
+                .build()
+
+            rabbitTemplate.send("", replyTo, responseMessage)
         }
     }
 }

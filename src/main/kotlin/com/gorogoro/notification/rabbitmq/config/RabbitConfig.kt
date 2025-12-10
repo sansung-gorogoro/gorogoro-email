@@ -76,9 +76,6 @@ class RabbitMqConfig {
     fun pocDlx(): TopicExchange = TopicExchange(DLX_NAME)
 
     @Bean
-    fun jsonMessageConverter(): MessageConverter = Jackson2JsonMessageConverter()
-
-    @Bean
     fun messageConverter(): Jackson2JsonMessageConverter {
         val objectMapper = ObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

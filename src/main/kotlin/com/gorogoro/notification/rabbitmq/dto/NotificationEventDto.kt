@@ -6,4 +6,4 @@ data class NotificationEventDto(
     val email: String,
     val type: EmailType,
     val payload: Map<String, Any> = emptyMap()
-)
+): Event

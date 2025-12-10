@@ -3,6 +3,7 @@ package com.gorogoro.notification.application.service
 import com.gorogoro.notification.application.port.`in`.SendNotificationUseCase
 import com.gorogoro.notification.application.port.out.SendEmailPort
 import com.gorogoro.notification.domain.model.EmailType
+import com.gorogoro.notification.domain.model.EventCommand
 import com.gorogoro.notification.domain.model.NotificationCommand
 import org.springframework.stereotype.Service
 import java.util.concurrent.ThreadLocalRandom
@@ -12,7 +13,16 @@ class NotificationService(
     private val sendEmailPort: SendEmailPort
 ) : SendNotificationUseCase {
 
-    override fun sendNotification(command: NotificationCommand): String? {
+    override fun sendNotification(command: EventCommand): String? {
+        return when (command) {
+            is NotificationCommand -> {
+                handleEmailEvent(command)
+            }
+            else -> null
+        }
+    }
+
+    private fun handleEmailEvent(command: NotificationCommand): String? {
         return when (command.type) {
             EmailType.WELCOME -> {
                 sendWelcomeEmail(command.email)
