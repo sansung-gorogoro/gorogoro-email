@@ -32,7 +32,6 @@ class MessageConsumer(
 
             val result = sendNotificationUseCase.sendNotification(command)
 
-            // RPC Reply Logic: If there is a result (e.g., verification code) and a reply-to address
             if (result != null && message.messageProperties.replyTo != null) {
                 val replyTo = message.messageProperties.replyTo
                 val correlationId = message.messageProperties.correlationId
