@@ -1,7 +1,7 @@
 package com.gorogoro.notification.application.port.`in`
 
-import com.gorogoro.notification.domain.model.EventCommand
+import com.gorogoro.notification.domain.model.SendGreetingMailCommand
 
 interface SendNotificationUseCase {
-    fun sendNotification(command: EventCommand): String?
+    fun sendGreetingEmail(command: SendGreetingMailCommand)
 }
