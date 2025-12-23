@@ -1,3 +1,5 @@
+server:
+  port: 8082
 spring:
   mail:
     host: smtp.gmail.com
@@ -20,3 +22,26 @@ spring:
     username: ${RABBIT_ID}
     password: ${RABBIT_PASSWORD}
     virtual-host: app-vhost
+
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: true
+
+rabbit:
+  events:
+    exchange: lxp.events
+    routing-prefix: lxp.
+    queues:
+      user:
+        name: notification.events.q
+        bindings:
+          - lxp.user.created
+          - lxp.user.verified
+      purchase:
+        name: purchase.events.q
+        bindings:
+    dlq:
+      dlx: lxp.events.dlx
+      name: lxp.events.dlq
+      routing: lxp.events.dlq
