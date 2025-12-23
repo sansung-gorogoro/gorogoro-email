@@ -1,4 +1,4 @@
-package com.gorogoro.auth.global.exception
+package com.gorogoro.notification.exception
 
 import org.springframework.http.HttpStatus
 

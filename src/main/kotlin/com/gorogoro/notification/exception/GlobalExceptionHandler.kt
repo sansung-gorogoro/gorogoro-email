@@ -1,6 +1,6 @@
-package com.gorogoro.auth.global.exception
+package com.gorogoro.notification.exception
 
-import com.gorogoro.auth.global.exception.dto.ErrorResponse
+import com.gorogoro.notification.exception.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
